@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -37,7 +37,31 @@ export default function OnboardingPage() {
       });
       router.replace("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not create your restaurant");
+      // Temporary diagnostic: log the raw error and try much harder to
+      // surface a real message, whatever shape the thrown value has
+      // (Error, Supabase PostgrestError-like object, plain string, etc.)
+      // instead of silently falling back to a generic message.
+      // eslint-disable-next-line no-console
+      console.error("Onboarding error (full object):", err);
+      let message = "Could not create your restaurant";
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (typeof err === "string") {
+        message = err;
+      } else if (err && typeof err === "object") {
+        const anyErr = err as Record<string, unknown>;
+        const candidate = anyErr.message ?? anyErr.error_description ?? anyErr.msg ?? anyErr.hint;
+        if (typeof candidate === "string" && candidate.length > 0) {
+          message = candidate;
+        } else {
+          try {
+            message = `Could not create your restaurant  ${JSON.stringify(err)}`;
+          } catch {
+            // JSON.stringify can fail on circular objects; keep the generic message
+          }
+        }
+      }
+      setError(message);
     } finally {
       setSubmitting(false);
     }
@@ -76,7 +100,7 @@ export default function OnboardingPage() {
           />
           {error && <p className="text-critical font-body-sm">{error}</p>}
           <Button type="submit" disabled={submitting} fullWidth>
-            {submitting ? "Creating…" : "Create Restaurant"}
+            {submitting ? "Creating" : "Create Restaurant"}
           </Button>
         </form>
       </Card>
