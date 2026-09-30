@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Font note: the design system specifies Plus Jakarta Sans throughout.
+ * next/font/google is intentionally NOT used here because this build
+ * sandbox cannot reach Google Fonts' host at build time. In production,
+ * either:
+ *   1) swap this for `next/font/google` (Plus_Jakarta_Sans) once deployed
+ *      somewhere with network access, or
+ *   2) self-host the woff2 files under /public/fonts and @font-face them.
+ * Until then we fall back to a close system stack so the app still looks
+ * right without a network fetch.
+ */
+:root {
+  --font-plus-jakarta: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter,
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --background: #fbf9f5;
+  --foreground: #1b1c1a;
+}
+
+* {
+  font-variant-numeric: normal;
+}
+
+/* DESIGN.md: "Tabular Numerals ... mandatory on all price ledgers, order
+   quantities, table timers, and split-check calculations". */
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+html,
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  font-family: var(--font-plus-jakarta);
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: #d6cec8;
+  border-radius: 9999px;
+}
